@@ -1,7 +1,7 @@
 const HV_CONFIG = {
-  appId: 'v9rb5g',
-  appKey: 'cvkwf0uqqag5cr6vb6is',
-  workflowId: 'face_auth', // Try a more generic workflow name
+  appId: process.env.REACT_APP_HV_APP_ID,
+  appKey: process.env.REACT_APP_HV_APP_KEY,
+  workflowId: process.env.REACT_APP_HV_WORKFLOW_ID,
   baseUrl: 'https://phl-orion.hyperverge.co'
 };
 

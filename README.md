@@ -1,3 +1,73 @@
+# Food Authentication System
+
+A web application for employee food authentication using HyperVerge face recognition SDK, replacing traditional QR code systems.
+
+## 🚀 Quick Start
+
+### 1. Environment Setup
+```bash
+# Clone the repository
+git clone <repository-url>
+cd food-auth-hv
+
+# Install dependencies
+npm install
+
+# Copy environment template
+cp .env.example .env
+
+# Fill in your credentials in .env file
+```
+
+### 2. Configure Environment Variables
+Edit `.env` file with your credentials:
+```
+REACT_APP_FIREBASE_API_KEY=your_firebase_api_key
+REACT_APP_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+REACT_APP_FIREBASE_PROJECT_ID=your_project_id
+REACT_APP_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+REACT_APP_FIREBASE_APP_ID=your_app_id
+REACT_APP_FIREBASE_MEASUREMENT_ID=your_measurement_id
+
+REACT_APP_HV_APP_ID=your_hyperverge_app_id
+REACT_APP_HV_APP_KEY=your_hyperverge_app_key
+REACT_APP_HV_WORKFLOW_ID=your_workflow_id
+```
+
+### 3. Run the Application
+```bash
+npm start
+```
+
+Access the app at `http://localhost:3000`
+Admin dashboard at `http://localhost:3000/admin`
+
+## 📁 Project Structure
+
+```
+src/
+├── components/
+│   ├── AuthPage.js          # User authentication interface
+│   └── AdminDashboard.js    # Admin panel for viewing logs
+├── firebase/
+│   └── config.js           # Firebase configuration
+├── services/
+│   └── hypervergeService.js # HyperVerge SDK integration
+└── App.js                  # Main app component
+```
+
+## 🔒 Security Notes
+
+- Never commit `.env` files to git
+- Firebase config contains sensitive API keys
+- HyperVerge credentials should be kept secure
+- Use environment variables in production
+
+---
+
+## HyperVerge Integration Details
+
 orkflowId : `enrol`
 
 Inputs Required: None
