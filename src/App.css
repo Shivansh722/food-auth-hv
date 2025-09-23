@@ -55,6 +55,16 @@ video {
   cursor: not-allowed;
 }
 
+.auth-container {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.auth-container p {
+  color: #666;
+  margin-bottom: 1rem;
+}
+
 .success {
   color: #28a745;
   text-align: center;
@@ -63,6 +73,18 @@ video {
 
 .error {
   color: #dc3545;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.info {
+  color: #007bff;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.warning {
+  color: #ffc107;
   text-align: center;
   margin-top: 1rem;
 }

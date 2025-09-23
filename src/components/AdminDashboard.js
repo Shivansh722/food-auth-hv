@@ -94,9 +94,13 @@ const AdminDashboard = () => {
               marginBottom: '0.5rem',
               backgroundColor: '#f9f9f9'
             }}>
-              <div><strong>User:</strong> {log.email || 'Unknown'}</div>
+              <div><strong>User ID:</strong> {log.userId || 'Unknown'}</div>
+              <div><strong>Transaction ID:</strong> {log.transactionId || 'N/A'}</div>
               <div><strong>Time:</strong> {formatTimestamp(log.timestamp)}</div>
               <div><strong>Status:</strong> {log.authenticated ? '✅ Authenticated' : '❌ Failed'}</div>
+              <div><strong>SDK Status:</strong> {log.status || 'N/A'}</div>
+              {log.matches !== undefined && <div><strong>Matches:</strong> {log.matches}</div>}
+              {log.blockMatches !== undefined && <div><strong>Block Matches:</strong> {log.blockMatches}</div>}
             </div>
           ))
         )}
