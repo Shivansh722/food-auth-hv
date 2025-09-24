@@ -64,11 +64,18 @@ const AuthPage = () => {
 
   return (
     <div className="container">
-      <Link to="/admin" className="admin-btn">Admin</Link>
-      <h1>Food Authentication</h1>
+      <Link to="/admin" className="admin-btn">Admin Dashboard</Link>
+      
+      <div className="logo-section">
+        <div className="company-logo">FoodAuth</div>
+        <div className="tagline">Secure Employee Food Authentication</div>
+      </div>
+      
+      <h1>Welcome</h1>
       
       <div className="auth-container">
-        <p>Click the button below to start face authentication</p>
+        <p>Please authenticate yourself to log your meal consumption. 
+           This secure system uses facial recognition to verify your identity.</p>
       </div>
 
       <button 
@@ -76,7 +83,7 @@ const AuthPage = () => {
         onClick={startAuthentication}
         disabled={isProcessing}
       >
-        {isProcessing ? 'Processing...' : 'Authenticate & Log Food'}
+        {isProcessing ? '🔄 Authenticating...' : '🎯 Authenticate & Log Meal'}
       </button>
 
       {message && (
