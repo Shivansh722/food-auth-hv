@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { createUserWithEmailAndPassword, sendPasswordResetEmail, signOut } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
 import { auth, db } from '../firebase/config';
@@ -106,17 +106,48 @@ const AdminLogin = () => {
     return (
       <div className="auth-container">
         <div className="auth-card">
+          {/* Back to Home Button */}
+          <div style={{ marginBottom: '20px' }}>
+            <Link 
+              to="/" 
+              style={{
+                color: 'rgba(0,0,0,0.6)',
+                textDecoration: 'none',
+                fontSize: '0.9rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px'
+              }}
+            >
+              ← Back to Home
+            </Link>
+          </div>
+
           <h2 style={{ color: '#212529', marginBottom: '20px' }}>✅ Admin Account Created!</h2>
           <p style={{ color: 'rgba(0,0,0,0.7)', marginBottom: '15px' }}>Password reset email sent to:</p>
           <p style={{ color: '#212529', fontWeight: '500', marginBottom: '15px' }}><strong>shivansh.c@hyperverge.co</strong></p>
           <p style={{ color: 'rgba(0,0,0,0.6)', fontSize: '0.9rem', marginBottom: '20px' }}>Check your email and click the reset link to set your password.</p>
-          <button 
-            className="auth-button secondary"
-            onClick={() => setSetupComplete(false)}
-            style={{ width: '100%' }}
-          >
-            Back to Login
-          </button>
+          
+          <div style={{ display: 'flex', gap: '10px', flexDirection: 'column' }}>
+            <button 
+              className="auth-button secondary"
+              onClick={() => setSetupComplete(false)}
+              style={{ width: '100%' }}
+            >
+              Back to Login
+            </button>
+            <Link 
+              to="/" 
+              className="auth-button"
+              style={{ 
+                textDecoration: 'none', 
+                textAlign: 'center',
+                display: 'block'
+              }}
+            >
+              Go to Home Page
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -125,6 +156,23 @@ const AdminLogin = () => {
   return (
     <div className="auth-container">
       <div className="auth-card">
+        {/* Back to Home Button */}
+        <div style={{ marginBottom: '20px' }}>
+          <Link 
+            to="/" 
+            style={{
+              color: 'rgba(0,0,0,0.6)',
+              textDecoration: 'none',
+              fontSize: '0.9rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '5px'
+            }}
+          >
+            ← Back to Home
+          </Link>
+        </div>
+
         <div className="auth-header">
           <h1 style={{ color: '#212529' }}>🍽️ Admin Login</h1>
           <p style={{ color: 'rgba(0,0,0,0.7)' }}>Food Authentication System</p>

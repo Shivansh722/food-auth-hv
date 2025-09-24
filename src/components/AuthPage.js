@@ -64,7 +64,7 @@ const AuthPage = () => {
 
   return (
     <div className="container">
-      <Link to="/admin" className="admin-btn">Admin Dashboard</Link>
+      <Link to="/admin/login" className="admin-btn">🔐 Admin Login</Link>
       
       <div className="logo-section">
         <div className="company-logo">FoodAuth</div>

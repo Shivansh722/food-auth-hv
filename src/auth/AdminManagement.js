@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { useAuth } from './AuthContext';
@@ -69,14 +70,47 @@ const AdminManagement = () => {
   if (userData?.role !== 'super_admin') {
     return (
       <div style={{ padding: '20px', textAlign: 'center' }}>
-        <h2>Access Denied</h2>
-        <p>Only super admins can manage other admins.</p>
+        <Link 
+          to="/admin" 
+          style={{
+            color: 'rgba(0,0,0,0.6)',
+            textDecoration: 'none',
+            fontSize: '0.9rem',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '5px',
+            marginBottom: '20px'
+          }}
+        >
+          ← Back to Dashboard
+        </Link>
+        <h2 style={{ color: '#212529' }}>🚫 Access Denied</h2>
+        <p style={{ color: 'rgba(0,0,0,0.7)' }}>Only super admins can manage other admins.</p>
       </div>
     );
   }
 
   return (
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+      {/* Navigation Header */}
+      <div style={{ marginBottom: '20px' }}>
+        <Link 
+          to="/admin" 
+          style={{
+            color: 'rgba(0,0,0,0.6)',
+            textDecoration: 'none',
+            fontSize: '0.9rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '5px',
+            marginBottom: '10px'
+          }}
+        >
+          ← Back to Dashboard
+        </Link>
+        <h1 style={{ color: '#212529', margin: '0' }}>👥 Admin Management</h1>
+      </div>
+
       <div style={{ 
         background: 'white', 
         padding: '20px', 
