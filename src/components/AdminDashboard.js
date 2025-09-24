@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { collection, query, orderBy, onSnapshot, addDoc } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useAuth } from '../auth/AuthContext';
 
 const AdminDashboard = () => {
   const [foodLogs, setFoodLogs] = useState([]);
@@ -12,6 +13,18 @@ const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [dateFilter, setDateFilter] = useState('today');
   const [searchTerm, setSearchTerm] = useState('');
+
+  const { userData, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/admin/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   useEffect(() => {
     const q = query(collection(db, 'foodLogs'), orderBy('timestamp', 'desc'));
@@ -177,16 +190,44 @@ const AdminDashboard = () => {
         }}>
           <div>
             <h1 style={{ margin: 0, color: '#212529', fontSize: '1.8rem' }}>Admin Dashboard</h1>
-            <p style={{ margin: '5px 0 0', color: 'rgba(0,0,0,0.7)' }}>Food Authentication System</p>
+            <p style={{ margin: '5px 0 0', color: 'rgba(0,0,0,0.7)' }}>
+              Food Authentication System - {userData?.email} ({userData?.role})
+            </p>
           </div>
-          <Link to="/" style={{
-            background: '#212529',
-            color: 'white',
-            padding: '10px 20px',
-            borderRadius: '8px',
-            textDecoration: 'none',
-            fontWeight: '500'
-          }}>← Back to Auth</Link>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+            {userData?.role === 'super_admin' && (
+              <Link to="/admin/manage" style={{
+                background: 'rgba(0,0,0,0.1)',
+                color: '#212529',
+                padding: '8px 16px',
+                borderRadius: '6px',
+                textDecoration: 'none',
+                fontSize: '14px'
+              }}>Manage Admins</Link>
+            )}
+            <Link to="/" style={{
+              background: 'rgba(0,0,0,0.1)',
+              color: '#212529',
+              padding: '8px 16px',
+              borderRadius: '6px',
+              textDecoration: 'none',
+              fontSize: '14px'
+            }}>← Auth Page</Link>
+            <button 
+              onClick={handleLogout}
+              style={{
+                background: '#212529',
+                color: 'white',
+                padding: '8px 16px',
+                borderRadius: '6px',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '14px'
+              }}
+            >
+              Logout
+            </button>
+          </div>
         </div>
 
         {/* Stats Cards */}
