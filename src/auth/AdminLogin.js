@@ -19,15 +19,17 @@ const AdminLogin = () => {
 
   // Manual first admin setup
   const setupFirstAdmin = async () => {
+    const FIRST_ADMIN_EMAIL = 'shivansh.c@hyperverge.co'; // Hardcoded for now
+    
     try {
       setError('');
       setLoading(true);
       
-      console.log('Setting up first admin...');
+      console.log('Setting up first admin for:', FIRST_ADMIN_EMAIL);
       
       // Step 1: Create Firestore document
-      await setDoc(doc(db, 'admins', process.env.REACT_APP_FIRST_ADMIN_EMAIL), {
-        email: process.env.REACT_APP_FIRST_ADMIN_EMAIL,
+      await setDoc(doc(db, 'admins', FIRST_ADMIN_EMAIL), {
+        email: FIRST_ADMIN_EMAIL,
         role: 'super_admin',
         createdAt: new Date().toISOString(),
         createdBy: 'system',
@@ -37,7 +39,7 @@ const AdminLogin = () => {
       
       // Step 2: Create Firebase Auth account
       const tempPassword = 'TempPassword123!';
-      await createUserWithEmailAndPassword(auth, process.env.REACT_APP_FIRST_ADMIN_EMAIL, tempPassword);
+      await createUserWithEmailAndPassword(auth, FIRST_ADMIN_EMAIL, tempPassword);
       console.log('Firebase Auth account created');
       
       // Step 3: Sign out immediately
@@ -45,8 +47,8 @@ const AdminLogin = () => {
       console.log('Signed out');
       
       // Step 4: Send password reset email
-      await sendPasswordResetEmail(auth, process.env.REACT_APP_FIRST_ADMIN_EMAIL);
-      console.log('Password reset email sent to:', process.env.REACT_APP_FIRST_ADMIN_EMAIL);
+      await sendPasswordResetEmail(auth, FIRST_ADMIN_EMAIL);
+      console.log('Password reset email sent to:', FIRST_ADMIN_EMAIL);
       
       setSetupComplete(true);
       
@@ -56,7 +58,7 @@ const AdminLogin = () => {
       if (error.code === 'auth/email-already-in-use') {
         console.log('Account exists, just sending password reset...');
         try {
-          await sendPasswordResetEmail(auth, process.env.REACT_APP_FIRST_ADMIN_EMAIL);
+          await sendPasswordResetEmail(auth, FIRST_ADMIN_EMAIL);
           console.log('Password reset email sent');
           setSetupComplete(true);
         } catch (resetError) {
@@ -102,15 +104,16 @@ const AdminLogin = () => {
 
   if (setupComplete) {
     return (
-      <div className="login-container">
-        <div className="login-card">
-          <h2>✅ Admin Account Created!</h2>
-          <p>Password reset email sent to:</p>
-          <p><strong>{process.env.REACT_APP_FIRST_ADMIN_EMAIL}</strong></p>
-          <p>Check your email and click the reset link to set your password.</p>
+      <div className="auth-container">
+        <div className="auth-card">
+          <h2 style={{ color: '#212529', marginBottom: '20px' }}>✅ Admin Account Created!</h2>
+          <p style={{ color: 'rgba(0,0,0,0.7)', marginBottom: '15px' }}>Password reset email sent to:</p>
+          <p style={{ color: '#212529', fontWeight: '500', marginBottom: '15px' }}><strong>shivansh.c@hyperverge.co</strong></p>
+          <p style={{ color: 'rgba(0,0,0,0.6)', fontSize: '0.9rem', marginBottom: '20px' }}>Check your email and click the reset link to set your password.</p>
           <button 
-            className="secondary-button"
+            className="auth-button secondary"
             onClick={() => setSetupComplete(false)}
+            style={{ width: '100%' }}
           >
             Back to Login
           </button>
@@ -120,28 +123,43 @@ const AdminLogin = () => {
   }
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <div className="login-header">
-          <h1>🍽️ Admin Login</h1>
-          <p>Food Authentication System</p>
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-header">
+          <h1 style={{ color: '#212529' }}>🍽️ Admin Login</h1>
+          <p style={{ color: 'rgba(0,0,0,0.7)' }}>Food Authentication System</p>
         </div>
 
-        {/* Debug/Setup Section */}
-        <div className="setup-section">
+        {/* Setup Section */}
+        <div style={{ 
+          background: 'rgba(0,0,0,0.03)', 
+          padding: '15px', 
+          borderRadius: '8px', 
+          marginBottom: '20px',
+          textAlign: 'center'
+        }}>
           <button 
-            className="setup-button"
+            className="auth-button"
             onClick={setupFirstAdmin}
             disabled={loading}
+            style={{ 
+              marginBottom: '10px',
+              fontSize: '0.9rem',
+              padding: '10px 20px'
+            }}
           >
             {loading ? 'Setting up...' : 'Setup First Admin Account'}
           </button>
-          <p>Click this button to manually create and send password reset email</p>
+          <p style={{ 
+            margin: '0', 
+            fontSize: '0.8rem', 
+            color: 'rgba(0,0,0,0.6)' 
+          }}>
+            Click this button to manually create and send password reset email
+          </p>
         </div>
 
-        <hr />
-
-        <form onSubmit={handleSubmit} className="login-form">
+        <form onSubmit={handleSubmit} className="auth-form">
           {error && (
             <div className="error-message">
               {error}
@@ -155,7 +173,7 @@ const AdminLogin = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder={`admin@hyperverge.co`}
+              placeholder="admin@hyperverge.co"
               required
             />
           </div>
@@ -174,13 +192,13 @@ const AdminLogin = () => {
 
           <button 
             type="submit" 
-            className="login-button"
+            className="auth-button"
             disabled={loading}
           >
             {loading ? 'Signing In...' : 'Sign In'}
           </button>
 
-          <div className="login-footer">
+          <div className="auth-footer">
             <button
               type="button"
               className="link-button"
