@@ -56,14 +56,10 @@ const AdminLogin = () => {
       console.error('Setup error:', error);
       
       if (error.code === 'auth/email-already-in-use') {
-        console.log('Account exists, just sending password reset...');
-        try {
-          await sendPasswordResetEmail(auth, FIRST_ADMIN_EMAIL);
-          console.log('Password reset email sent');
-          setSetupComplete(true);
-        } catch (resetError) {
-          setError('Failed to send password reset email: ' + resetError.message);
-        }
+        setError(
+          "A super admin account already exists. Please contact the super admin to add you as an admin. " +
+          "If you are the super admin and forgot your password, use 'Forgot Password?' to reset it."
+        );
       } else {
         setError('Setup failed: ' + error.message);
       }
