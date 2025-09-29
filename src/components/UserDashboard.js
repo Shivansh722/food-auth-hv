@@ -129,14 +129,20 @@ const UserDashboard = () => {
       const weekVerifications = verifications.filter(v => new Date(v.timestamp.toDate()) >= thisWeek);
       const monthVerifications = verifications.filter(v => new Date(v.timestamp.toDate()) >= thisMonth);
 
-      // Calculate meal distribution
+      // Calculate meal distribution using mealType field (fallback to hour-based calculation)
       const mealCounts = { breakfast: 0, lunch: 0, dinner: 0, snack: 0 };
       weekVerifications.forEach(v => {
-        const hour = new Date(v.timestamp.toDate()).getHours();
-        if (hour >= 6 && hour < 11) mealCounts.breakfast++;
-        else if (hour >= 11 && hour < 16) mealCounts.lunch++;
-        else if (hour >= 16 && hour < 22) mealCounts.dinner++;
-        else mealCounts.snack++;
+        if (v.mealType) {
+          // Use the mealType field if available
+          mealCounts[v.mealType] = (mealCounts[v.mealType] || 0) + 1;
+        } else {
+          // Fallback to hour-based calculation for older records
+          const hour = new Date(v.timestamp.toDate()).getHours();
+          if (hour >= 6 && hour < 11) mealCounts.breakfast++;
+          else if (hour >= 11 && hour < 16) mealCounts.lunch++;
+          else if (hour >= 16 && hour < 22) mealCounts.dinner++;
+          else mealCounts.snack++;
+        }
       });
 
       const mealDistribution = [
@@ -252,9 +258,17 @@ const UserDashboard = () => {
     return new Date(timestamp.toDate()).toLocaleString();
   };
 
-  const getMealTime = (timestamp) => {
-    if (!timestamp) return 'Unknown';
-    const hour = new Date(timestamp.toDate()).getHours();
+  const getMealTime = (verification) => {
+    if (!verification) return 'Unknown';
+    
+    // Use mealType field if available
+    if (verification.mealType) {
+      return verification.mealType.charAt(0).toUpperCase() + verification.mealType.slice(1);
+    }
+    
+    // Fallback to hour-based calculation
+    if (!verification.timestamp) return 'Unknown';
+    const hour = new Date(verification.timestamp.toDate()).getHours();
     if (hour >= 6 && hour < 11) return 'Breakfast';
     if (hour >= 11 && hour < 16) return 'Lunch';
     if (hour >= 16 && hour < 22) return 'Dinner';
@@ -402,7 +416,7 @@ const UserDashboard = () => {
                   >
                     <div>
                       <div style={{ fontWeight: '500', fontSize: '14px' }}>
-                        {getMealTime(verification.timestamp)}
+                        {getMealTime(verification)}
                       </div>
                       <div style={{ fontSize: '12px', color: 'rgba(0,0,0,0.6)' }}>
                         {formatTimestamp(verification.timestamp)}
@@ -524,7 +538,7 @@ const UserDashboard = () => {
                 {verificationHistory.map(verification => (
                   <tr key={verification.id} style={{ borderBottom: '1px solid #f0f0f0' }}>
                     <td style={{ padding: '12px' }}>{formatTimestamp(verification.timestamp)}</td>
-                    <td style={{ padding: '12px', fontWeight: '500' }}>{getMealTime(verification.timestamp)}</td>
+                    <td style={{ padding: '12px', fontWeight: '500' }}>{getMealTime(verification)}</td>
                     <td style={{ padding: '12px' }}>
                       <span style={{
                         background: 'rgba(0,123,255,0.1)',

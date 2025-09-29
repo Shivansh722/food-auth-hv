@@ -1,6 +1,7 @@
 import emailjs from '@emailjs/browser';
 import { collection, addDoc, doc, updateDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase/config';
+import userProfileService from './userProfileService';
 
 // EmailJS configuration - get these from https://www.emailjs.com/
 const EMAILJS_CONFIG = {
@@ -181,18 +182,59 @@ class EmailService {
   // Log successful food authentication
   async logFoodConsumption(email, verificationId) {
     try {
+      const now = new Date();
+      const currentHour = now.getHours();
+      
+      // Determine meal type based on time
+      let mealType = 'snack';
+      if (currentHour >= 6 && currentHour < 11) mealType = 'breakfast';
+      else if (currentHour >= 11 && currentHour < 16) mealType = 'lunch';
+      else if (currentHour >= 16 && currentHour < 22) mealType = 'dinner';
+
       const foodLog = {
         timestamp: serverTimestamp(),
         email: email,
+        userId: email, // Add userId field for consistency
         method: 'email_verification',
         verificationId: verificationId,
         authenticated: true,
-        status: 'verified'
+        status: 'verified',
+        verified: true,
+        mealType: mealType,
+        hour: currentHour,
+        date: now.toISOString().split('T')[0]
       };
 
-      const docRef = await addDoc(collection(db, 'foodLogs'), foodLog);
-      console.log('Food consumption logged:', docRef.id);
-      return docRef.id;
+      // Store in foodLogs collection
+      const foodLogRef = await addDoc(collection(db, 'foodLogs'), foodLog);
+      console.log('Food consumption logged in foodLogs:', foodLogRef.id);
+
+      // Also store in verifications collection for dashboard compatibility
+      const verificationLog = {
+        ...foodLog,
+        foodLogId: foodLogRef.id
+      };
+      
+      const verificationRef = await addDoc(collection(db, 'verifications'), verificationLog);
+      console.log('Verification logged in verifications:', verificationRef.id);
+
+      // Create or update user profile with verification details
+      try {
+        await userProfileService.updateVerificationDetails(email, {
+          mealType: mealType,
+          method: 'email_verification',
+          hour: currentHour,
+          date: now.toISOString().split('T')[0],
+          verificationId: verificationRef.id,
+          foodLogId: foodLogRef.id
+        });
+        console.log('User profile updated for:', email);
+      } catch (profileError) {
+        console.error('Error updating user profile:', profileError);
+        // Don't throw error here to avoid breaking the main flow
+      }
+      
+      return { foodLogId: foodLogRef.id, verificationId: verificationRef.id };
     } catch (error) {
       console.error('Error logging food consumption:', error);
       throw error;

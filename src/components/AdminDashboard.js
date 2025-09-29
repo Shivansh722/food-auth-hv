@@ -165,12 +165,21 @@ const AdminDashboard = () => {
     return new Date(timestamp.seconds * 1000).toLocaleString();
   };
 
-  const getMealTime = (timestamp) => {
-    if (!timestamp) return 'Unknown';
-    const hour = new Date(timestamp.seconds * 1000).getHours();
+  const getMealTime = (log) => {
+    if (!log) return 'Unknown';
+    
+    // Use mealType field if available
+    if (log.mealType) {
+      return log.mealType.charAt(0).toUpperCase() + log.mealType.slice(1);
+    }
+    
+    // Fallback to hour-based calculation
+    if (!log.timestamp) return 'Unknown';
+    const hour = new Date(log.timestamp.seconds * 1000).getHours();
     if (hour >= 6 && hour < 11) return 'Breakfast';
     if (hour >= 11 && hour < 16) return 'Lunch';
-    return 'Snacks/Dinner';
+    if (hour >= 16 && hour < 22) return 'Dinner';
+    return 'Snack';
   };
 
   return (
@@ -416,7 +425,7 @@ const AdminDashboard = () => {
                     <tr key={log.id} style={{ borderBottom: '1px solid #f0f0f0' }}>
                       <td style={{ padding: '12px' }}>{formatTimestamp(log.timestamp)}</td>
                       <td style={{ padding: '12px', fontWeight: '500' }}>{log.userId || 'Unknown'}</td>
-                      <td style={{ padding: '12px' }}>{getMealTime(log.timestamp)}</td>
+                      <td style={{ padding: '12px' }}>{getMealTime(log)}</td>
                       <td style={{ padding: '12px' }}>
                         <span style={{
                           padding: '4px 8px',
