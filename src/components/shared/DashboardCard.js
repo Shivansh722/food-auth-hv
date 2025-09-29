@@ -37,7 +37,10 @@ const DashboardCard = ({
         <div style={{
           padding: '16px 20px',
           borderBottom: '1px solid rgba(0,0,0,0.08)',
-          background: headerColor || '#1a1a1a'
+          background: headerColor || '#1a1a1a',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
         }}>
           <h3 style={{
             margin: 0,
@@ -51,6 +54,11 @@ const DashboardCard = ({
             {icon && <span>{icon}</span>}
             {title}
           </h3>
+          {action && (
+            <div style={{ marginLeft: 'auto' }}>
+              {action}
+            </div>
+          )}
         </div>
       )}
       

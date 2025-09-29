@@ -47,10 +47,10 @@ const RegularAdminDashboard = () => {
       return logDate >= lastWeek && logDate < thisWeek;
     });
 
-    // Get unique users
-    const uniqueUsers = [...new Set(logs.map(log => log.userId))];
-    const activeUsersToday = [...new Set(todayLogs.map(log => log.userId))];
-    const activeUsersWeek = [...new Set(weekLogs.map(log => log.userId))];
+    // Get unique users (filter out undefined/null userIds)
+    const uniqueUsers = [...new Set(logs.map(log => log.userId).filter(userId => userId))];
+    const activeUsersToday = [...new Set(todayLogs.map(log => log.userId).filter(userId => userId))];
+    const activeUsersWeek = [...new Set(weekLogs.map(log => log.userId).filter(userId => userId))];
 
     // Calculate success rate
     const successfulLogs = logs.filter(log => log.status === 'success');
@@ -191,6 +191,7 @@ const RegularAdminDashboard = () => {
 
   const getTopUsersData = () => {
     return users
+      .filter(user => user.email) // Filter out users with undefined/null email
       .sort((a, b) => b.totalMeals - a.totalMeals)
       .slice(0, 5)
       .map(user => ({
@@ -219,6 +220,45 @@ const RegularAdminDashboard = () => {
     } catch (error) {
       console.error('Error performing user action:', error);
     }
+  };
+
+  const exportLogsToCSV = () => {
+    if (foodLogs.length === 0) {
+      alert('No logs to export');
+      return;
+    }
+
+    // Create CSV headers
+    const headers = ['Date', 'Time', 'User ID', 'Action', 'Status', 'Details'];
+    
+    // Convert logs to CSV format
+    const csvData = [
+      headers,
+      ...foodLogs.map(log => [
+        log.timestamp ? new Date(log.timestamp.toDate()).toLocaleDateString() : 'N/A',
+        log.timestamp ? new Date(log.timestamp.toDate()).toLocaleTimeString() : 'N/A',
+        log.userId || 'Unknown',
+        log.action || 'Food Log',
+        log.status || 'Completed',
+        log.details || `Meal logged by ${log.userId || 'Unknown user'}`
+      ])
+    ];
+
+    // Convert to CSV string
+    const csvContent = csvData.map(row => 
+      row.map(field => `"${field}"`).join(',')
+    ).join('\n');
+
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `food_logs_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -324,8 +364,6 @@ const RegularAdminDashboard = () => {
         }}>
           {[
             { id: 'overview', label: 'Overview', icon: '📊' },
-            { id: 'users', label: 'User Management', icon: '👥' },
-            { id: 'analytics', label: 'Analytics', icon: '📈' },
             { id: 'monitoring', label: 'Monitoring', icon: '📡' }
           ].map(tab => (
             <button
@@ -370,6 +408,32 @@ const RegularAdminDashboard = () => {
             <DashboardCard
               title="Recent Transactions"
               icon="🕐"
+              action={
+                <button
+                  onClick={exportLogsToCSV}
+                  style={{
+                    background: 'rgba(255,255,255,0.2)',
+                    border: '1px solid rgba(255,255,255,0.3)',
+                    color: 'white',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseOver={(e) => {
+                    e.target.style.background = 'rgba(255,255,255,0.3)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.target.style.background = 'rgba(255,255,255,0.2)';
+                  }}
+                >
+                  📥 Export CSV
+                </button>
+              }
             >
               <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
                 {foodLogs.slice(0, 10).map(log => (
@@ -440,156 +504,7 @@ const RegularAdminDashboard = () => {
         </div>
       )}
 
-      {activeTab === 'users' && (
-        <DashboardCard
-          title="User Management"
-          icon="👥"
-          loading={loading}
-        >
-          <div style={{ marginBottom: '16px', display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <input
-              type="text"
-              placeholder="Search users..."
-              style={{
-                flex: 1,
-                padding: '8px 12px',
-                border: '1px solid #ddd',
-                borderRadius: '6px',
-                fontSize: '14px'
-              }}
-            />
-            <select
-              style={{
-                padding: '8px 12px',
-                border: '1px solid #ddd',
-                borderRadius: '6px',
-                fontSize: '14px'
-              }}
-            >
-              <option value="all">All Users</option>
-              <option value="active">Active Today</option>
-              <option value="inactive">Inactive</option>
-            </select>
-          </div>
 
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead>
-                <tr style={{ background: 'rgba(0,0,0,0.02)' }}>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid rgba(0,0,0,0.1)' }}>User</th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid rgba(0,0,0,0.1)' }}>Status</th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid rgba(0,0,0,0.1)' }}>Total Meals</th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid rgba(0,0,0,0.1)' }}>This Week</th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid rgba(0,0,0,0.1)' }}>Last Activity</th>
-                  <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid rgba(0,0,0,0.1)' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.slice(0, 20).map(user => (
-                  <tr key={user.id} style={{ borderBottom: '1px solid #f0f0f0' }}>
-                    <td style={{ padding: '12px', fontWeight: '500' }}>
-                      {user.email.split('@')[0]}
-                    </td>
-                    <td style={{ padding: '12px' }}>
-                      <span style={{
-                        color: user.status === 'active' ? '#28a745' : '#6c757d',
-                        fontWeight: '500'
-                      }}>
-                        {user.status === 'active' ? '🟢 Active' : '⚪ Inactive'}
-                      </span>
-                    </td>
-                    <td style={{ padding: '12px', fontSize: '14px' }}>{user.totalMeals}</td>
-                    <td style={{ padding: '12px', fontSize: '14px' }}>{user.weeklyMeals}</td>
-                    <td style={{ padding: '12px', fontSize: '14px', color: 'rgba(0,0,0,0.6)' }}>
-                      {formatTimestamp(user.lastActivity)}
-                    </td>
-                    <td style={{ padding: '12px' }}>
-                      <span style={{ fontSize: '12px', color: 'rgba(0,0,0,0.6)' }}>
-                        {user.status === 'active' ? 'Currently Active' : 'Inactive'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </DashboardCard>
-      )}
-
-      {activeTab === 'analytics' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-          <DashboardCard
-            title="Rush Hour Analysis"
-            icon="⏰"
-            loading={loading}
-          >
-            <RushTimeChart data={getRushTimeData()} height={250} />
-            <div style={{ marginTop: '16px', fontSize: '12px', color: 'rgba(0,0,0,0.6)' }}>
-              Peak usage times over the last 7 days
-            </div>
-          </DashboardCard>
-
-          <DashboardCard
-            title="Performance Metrics"
-            icon="📊"
-          >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '14px', color: 'rgba(0,0,0,0.7)' }}>Success Rate</span>
-                  <span style={{ fontSize: '14px', fontWeight: '600' }}>{stats.successRate}%</span>
-                </div>
-                <div style={{
-                  width: '100%',
-                  height: '8px',
-                  background: 'rgba(0,0,0,0.1)',
-                  borderRadius: '4px',
-                  overflow: 'hidden'
-                }}>
-                  <div style={{
-                    width: `${stats.successRate}%`,
-                    height: '100%',
-                    background: '#1a1a1a',
-                    transition: 'width 0.3s ease'
-                  }} />
-                </div>
-              </div>
-
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '14px', color: 'rgba(0,0,0,0.7)' }}>User Engagement</span>
-                  <span style={{ fontSize: '14px', fontWeight: '600' }}>
-                    {((stats.activeUsersWeek / stats.totalUsers) * 100 || 0).toFixed(1)}%
-                  </span>
-                </div>
-                <div style={{
-                  width: '100%',
-                  height: '8px',
-                  background: 'rgba(0,0,0,0.1)',
-                  borderRadius: '4px',
-                  overflow: 'hidden'
-                }}>
-                  <div style={{
-                    width: `${(stats.activeUsersWeek / stats.totalUsers) * 100 || 0}%`,
-                    height: '100%',
-                    background: '#6c757d',
-                    transition: 'width 0.3s ease'
-                  }} />
-                </div>
-              </div>
-
-              <div style={{ marginTop: '16px', padding: '16px', background: 'rgba(0,0,0,0.02)', borderRadius: '8px' }}>
-                <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>Key Insights</div>
-                <div style={{ fontSize: '13px', color: 'rgba(0,0,0,0.7)', lineHeight: '1.4' }}>
-                  • Peak usage at {stats.peakHour}<br/>
-                  • {stats.avgMealsPerUser} avg meals per user<br/>
-                  • {stats.weekGrowth > 0 ? '+' : ''}{stats.weekGrowth}% growth this week
-                </div>
-              </div>
-            </div>
-          </DashboardCard>
-        </div>
-      )}
 
       {activeTab === 'monitoring' && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>

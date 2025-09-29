@@ -218,6 +218,45 @@ const SuperAdminDashboard = () => {
     document.body.removeChild(link);
   };
 
+  const exportLogsToCSV = () => {
+    if (foodLogs.length === 0) {
+      alert('No logs to export');
+      return;
+    }
+
+    // Create CSV headers
+    const headers = ['Date', 'Time', 'User ID', 'Action', 'Status', 'Details'];
+    
+    // Convert logs to CSV format
+    const csvData = [
+      headers,
+      ...foodLogs.map(log => [
+        log.timestamp ? new Date(log.timestamp.toDate()).toLocaleDateString() : 'N/A',
+        log.timestamp ? new Date(log.timestamp.toDate()).toLocaleTimeString() : 'N/A',
+        log.userId || 'Unknown',
+        log.action || 'Food Log',
+        log.status || 'Completed',
+        log.details || `Meal logged by ${log.userId || 'Unknown user'}`
+      ])
+    ];
+
+    // Convert to CSV string
+    const csvContent = csvData.map(row => 
+      row.map(field => `"${field}"`).join(',')
+    ).join('\n');
+
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `food_logs_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const calculateSystemStats = (logs, adminsList) => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -418,9 +457,7 @@ const SuperAdminDashboard = () => {
         }}>
           {[
             { id: 'overview', label: 'Overview', icon: '📊' },
-            { id: 'admins', label: 'Admin Management', icon: '👨‍💼' },
-            { id: 'users', label: 'Verified Users', icon: '✅' },
-            { id: 'analytics', label: 'System Analytics', icon: '📈' }
+            { id: 'admins', label: 'Admin Management', icon: '👨‍💼' }
           ].map(tab => (
             <button
               key={tab.id}
@@ -464,6 +501,32 @@ const SuperAdminDashboard = () => {
             <DashboardCard
               title="Recent System Activity"
               icon="🕐"
+              action={
+                <button
+                  onClick={exportLogsToCSV}
+                  style={{
+                    background: 'rgba(255,255,255,0.2)',
+                    border: '1px solid rgba(255,255,255,0.3)',
+                    color: 'white',
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    transition: 'all 0.2s ease'
+                  }}
+                  onMouseOver={(e) => {
+                    e.target.style.background = 'rgba(255,255,255,0.3)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.target.style.background = 'rgba(255,255,255,0.2)';
+                  }}
+                >
+                  📥 Export CSV
+                </button>
+              }
             >
               <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
                 {foodLogs.slice(0, 10).map(log => (
@@ -749,264 +812,7 @@ const SuperAdminDashboard = () => {
         </div>
       )}
 
-      {activeTab === 'users' && (
-        <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-            <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '600' }}>Verified Users</h3>
-            <div style={{ display: 'flex', gap: '12px' }}>
-              <button
-                onClick={loadVerifiedUsers}
-                disabled={verifiedUsersLoading}
-                style={{
-                  padding: '12px 24px',
-                  background: '#28a745',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  cursor: verifiedUsersLoading ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  opacity: verifiedUsersLoading ? 0.6 : 1
-                }}
-              >
-                <span>🔄</span>
-                {verifiedUsersLoading ? 'Loading...' : 'Refresh'}
-              </button>
-              <button
-                onClick={exportToCSV}
-                disabled={verifiedUsers.length === 0}
-                style={{
-                  padding: '12px 24px',
-                  background: verifiedUsers.length === 0 ? '#6c757d' : '#007bff',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  cursor: verifiedUsers.length === 0 ? 'not-allowed' : 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}
-              >
-                <span>📥</span>
-                Export to CSV
-              </button>
-            </div>
-          </div>
 
-          <DashboardCard
-            title={`Verified Users (${verifiedUsers.length})`}
-            icon="✅"
-            loading={verifiedUsersLoading}
-          >
-            {verifiedUsers.length === 0 && !verifiedUsersLoading ? (
-              <div style={{
-                textAlign: 'center',
-                padding: '40px 20px',
-                color: 'rgba(0,0,0,0.6)'
-              }}>
-                <div style={{ fontSize: '48px', marginBottom: '16px' }}>📭</div>
-                <h4 style={{ margin: '0 0 8px 0', fontSize: '18px' }}>No Verified Users Found</h4>
-                <p style={{ margin: 0, fontSize: '14px' }}>
-                  No users have completed the verification process yet.
-                </p>
-              </div>
-            ) : (
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                  <thead>
-                    <tr style={{ background: 'rgba(0,0,0,0.02)' }}>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid rgba(0,0,0,0.1)' }}>Email</th>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid rgba(0,0,0,0.1)' }}>Email Verified</th>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid rgba(0,0,0,0.1)' }}>Face Verified</th>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid rgba(0,0,0,0.1)' }}>Last Verification</th>
-                      <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid rgba(0,0,0,0.1)' }}>Method</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {verifiedUsers.map((user, index) => (
-                      <tr key={index} style={{ borderBottom: '1px solid #f0f0f0' }}>
-                        <td style={{ padding: '12px', fontWeight: '500' }}>{user.email}</td>
-                        <td style={{ padding: '12px' }}>
-                          <span style={{
-                            background: user.emailVerified ? 'rgba(40,167,69,0.1)' : 'rgba(220,53,69,0.1)',
-                            color: user.emailVerified ? '#28a745' : '#dc3545',
-                            padding: '4px 8px',
-                            borderRadius: '4px',
-                            fontSize: '12px',
-                            fontWeight: '500'
-                          }}>
-                            {user.emailVerified ? '✅ Yes' : '❌ No'}
-                          </span>
-                        </td>
-                        <td style={{ padding: '12px' }}>
-                          <span style={{
-                            background: user.faceVerified ? 'rgba(40,167,69,0.1)' : 'rgba(220,53,69,0.1)',
-                            color: user.faceVerified ? '#28a745' : '#dc3545',
-                            padding: '4px 8px',
-                            borderRadius: '4px',
-                            fontSize: '12px',
-                            fontWeight: '500'
-                          }}>
-                            {user.faceVerified ? '✅ Yes' : '❌ No'}
-                          </span>
-                        </td>
-                        <td style={{ padding: '12px', fontSize: '14px', color: 'rgba(0,0,0,0.6)' }}>
-                          {user.lastVerification ? 
-                            new Date(user.lastVerification.toDate ? user.lastVerification.toDate() : user.lastVerification).toLocaleString() 
-                            : 'N/A'
-                          }
-                        </td>
-                        <td style={{ padding: '12px' }}>
-                          <span style={{
-                            background: 'rgba(0,123,255,0.1)',
-                            color: '#007bff',
-                            padding: '4px 8px',
-                            borderRadius: '4px',
-                            fontSize: '12px',
-                            fontWeight: '500'
-                          }}>
-                            {user.verificationMethod === 'email' ? '📧 Email' : 
-                             user.verificationMethod === 'face' ? '👤 Face' : '🔍 Mixed'}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </DashboardCard>
-
-          <div style={{ marginTop: '24px' }}>
-            <DashboardCard
-              title="Verification Statistics"
-              icon="📊"
-            >
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
-                <div style={{ textAlign: 'center', padding: '20px' }}>
-                  <div style={{ fontSize: '32px', fontWeight: '600', color: '#007bff', marginBottom: '8px' }}>
-                    {verifiedUsers.length}
-                  </div>
-                  <div style={{ fontSize: '14px', color: 'rgba(0,0,0,0.6)' }}>Total Verified Users</div>
-                </div>
-                <div style={{ textAlign: 'center', padding: '20px' }}>
-                  <div style={{ fontSize: '32px', fontWeight: '600', color: '#28a745', marginBottom: '8px' }}>
-                    {verifiedUsers.filter(u => u.emailVerified).length}
-                  </div>
-                  <div style={{ fontSize: '14px', color: 'rgba(0,0,0,0.6)' }}>Email Verified</div>
-                </div>
-                <div style={{ textAlign: 'center', padding: '20px' }}>
-                  <div style={{ fontSize: '32px', fontWeight: '600', color: '#6f42c1', marginBottom: '8px' }}>
-                    {verifiedUsers.filter(u => u.faceVerified).length}
-                  </div>
-                  <div style={{ fontSize: '14px', color: 'rgba(0,0,0,0.6)' }}>Face Verified</div>
-                </div>
-                <div style={{ textAlign: 'center', padding: '20px' }}>
-                  <div style={{ fontSize: '32px', fontWeight: '600', color: '#ffc107', marginBottom: '8px' }}>
-                    {verifiedUsers.filter(u => u.emailVerified && u.faceVerified).length}
-                  </div>
-                  <div style={{ fontSize: '14px', color: 'rgba(0,0,0,0.6)' }}>Fully Verified</div>
-                </div>
-              </div>
-            </DashboardCard>
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'analytics' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-          <DashboardCard
-            title="Usage Comparison"
-            icon="📊"
-            loading={loading}
-          >
-            <UsageComparisonChart 
-              data={[
-                { name: 'This Week', current: systemStats.weeklyMeals || 0, previous: (systemStats.weeklyMeals || 0) * 0.8 },
-                { name: 'This Month', current: systemStats.monthlyMeals || 0, previous: (systemStats.monthlyMeals || 0) * 0.9 }
-              ]} 
-              height={250} 
-            />
-          </DashboardCard>
-
-          <DashboardCard
-            title="System Metrics"
-            icon="⚡"
-          >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '14px', color: 'rgba(0,0,0,0.7)' }}>User Engagement</span>
-                  <span style={{ fontSize: '14px', fontWeight: '600' }}>
-                    {((systemStats.activeUsersWeek / systemStats.totalUsers) * 100 || 0).toFixed(1)}%
-                  </span>
-                </div>
-                <div style={{
-                  width: '100%',
-                  height: '8px',
-                  background: 'rgba(0,0,0,0.1)',
-                  borderRadius: '4px',
-                  overflow: 'hidden'
-                }}>
-                  <div style={{
-                    width: `${(systemStats.activeUsersWeek / systemStats.totalUsers) * 100 || 0}%`,
-                    height: '100%',
-                    background: 'linear-gradient(90deg, #007bff, #0056b3)',
-                    transition: 'width 0.3s ease'
-                  }} />
-                </div>
-              </div>
-
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '14px', color: 'rgba(0,0,0,0.7)' }}>System Load</span>
-                  <span style={{ fontSize: '14px', fontWeight: '600' }}>23%</span>
-                </div>
-                <div style={{
-                  width: '100%',
-                  height: '8px',
-                  background: 'rgba(0,0,0,0.1)',
-                  borderRadius: '4px',
-                  overflow: 'hidden'
-                }}>
-                  <div style={{
-                    width: '23%',
-                    height: '100%',
-                    background: 'linear-gradient(90deg, #28a745, #1e7e34)',
-                    transition: 'width 0.3s ease'
-                  }} />
-                </div>
-              </div>
-
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '14px', color: 'rgba(0,0,0,0.7)' }}>Storage Used</span>
-                  <span style={{ fontSize: '14px', fontWeight: '600' }}>45%</span>
-                </div>
-                <div style={{
-                  width: '100%',
-                  height: '8px',
-                  background: 'rgba(0,0,0,0.1)',
-                  borderRadius: '4px',
-                  overflow: 'hidden'
-                }}>
-                  <div style={{
-                    width: '45%',
-                    height: '100%',
-                    background: 'linear-gradient(90deg, #ffc107, #e0a800)',
-                    transition: 'width 0.3s ease'
-                  }} />
-                </div>
-              </div>
-            </div>
-          </DashboardCard>
-        </div>
-      )}
     </DashboardLayout>
   );
 };
