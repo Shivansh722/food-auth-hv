@@ -126,7 +126,7 @@ const AdminManagement = () => {
               type="email"
               value={newAdminEmail}
               onChange={(e) => setNewAdminEmail(e.target.value)}
-              placeholder={`admin@${process.env.REACT_APP_COMPANY_DOMAIN}`}
+              placeholder="admin@example.com"
               style={{
                 padding: '8px 12px',
                 borderRadius: '6px',

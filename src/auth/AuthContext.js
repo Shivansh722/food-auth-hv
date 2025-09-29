@@ -2,9 +2,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { 
   signInWithEmailAndPassword, 
   signOut, 
-  sendPasswordResetEmail,
   createUserWithEmailAndPassword,
-  onAuthStateChanged 
+  onAuthStateChanged,
+  sendPasswordResetEmail
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, collection, getDocs } from 'firebase/firestore';
 import { auth, db } from '../firebase/config';
@@ -48,15 +48,22 @@ export function AuthProvider({ children }) {
           // Step 3: Sign out immediately (we don't want to stay logged in)
           await signOut(auth);
           
-          // Step 4: Now send password reset email
-          await sendPasswordResetEmail(auth, process.env.REACT_APP_FIRST_ADMIN_EMAIL);
-          console.log('Password reset email sent to:', process.env.REACT_APP_FIRST_ADMIN_EMAIL);
+          // Step 4: Now send password reset email using hardcoded service
+          const emailResult = await sendPasswordResetEmail(process.env.REACT_APP_FIRST_ADMIN_EMAIL);
+          if (emailResult.success) {
+            console.log('Password reset email sent to:', process.env.REACT_APP_FIRST_ADMIN_EMAIL);
+          } else {
+            console.error('Failed to send password reset email:', emailResult.error);
+          }
           
         } catch (authError) {
           if (authError.code === 'auth/email-already-in-use') {
             // Account exists, just send reset email
             console.log('Account exists, sending password reset email...');
-            await sendPasswordResetEmail(auth, process.env.REACT_APP_FIRST_ADMIN_EMAIL);
+            const emailResult = await sendPasswordResetEmail(process.env.REACT_APP_FIRST_ADMIN_EMAIL);
+            if (!emailResult.success) {
+              console.error('Failed to send password reset email:', emailResult.error);
+            }
           } else {
             console.error('Error creating Firebase Auth account:', authError.message);
           }
@@ -80,11 +87,6 @@ export function AuthProvider({ children }) {
 
   // Login
   async function login(email, password) {
-    const domain = email.split('@')[1];
-    if (domain !== process.env.REACT_APP_COMPANY_DOMAIN) {
-      throw new Error(`Only ${process.env.REACT_APP_COMPANY_DOMAIN} emails are allowed`);
-    }
-
     const adminData = await getAdminData(email);
     if (!adminData) {
       throw new Error('You are not authorized to access the admin panel');
@@ -105,12 +107,12 @@ export function AuthProvider({ children }) {
   }
 
   // Reset password
-  function resetPassword(email) {
+  async function resetPassword(email) {
     return sendPasswordResetEmail(auth, email);
   }
 
   // Add new admin
-  async function addAdmin(email, role = 'admin') {
+  async function addAdmin(email, role) {
     if (!userData || userData.role !== 'super_admin') {
       throw new Error('Only super admins can add new admins');
     }

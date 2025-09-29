@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useAuth } from './AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { createUserWithEmailAndPassword, sendPasswordResetEmail, signOut } from 'firebase/auth';
-import { setDoc, doc } from 'firebase/firestore';
+import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { setDoc, doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase/config';
+import { sendPasswordResetEmail } from '../services/hardcodedEmailService';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -46,9 +47,13 @@ const AdminLogin = () => {
       await signOut(auth);
       console.log('Signed out');
       
-      // Step 4: Send password reset email
-      await sendPasswordResetEmail(auth, FIRST_ADMIN_EMAIL);
-      console.log('Password reset email sent to:', FIRST_ADMIN_EMAIL);
+      // Step 4: Send password reset email using hardcoded service
+      const emailResult = await sendPasswordResetEmail(FIRST_ADMIN_EMAIL);
+      if (emailResult.success) {
+        console.log('Password reset email sent to:', FIRST_ADMIN_EMAIL);
+      } else {
+        throw new Error(emailResult.error);
+      }
       
       setSetupComplete(true);
       
@@ -68,6 +73,8 @@ const AdminLogin = () => {
     }
   };
 
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -75,7 +82,19 @@ const AdminLogin = () => {
       setError('');
       setLoading(true);
       await login(email, password);
-      navigate('/admin');
+      
+      // Get admin data to determine role and redirect accordingly
+      const adminDoc = await getDoc(doc(db, 'admins', email));
+      if (adminDoc.exists()) {
+        const adminData = adminDoc.data();
+        if (adminData.role === 'super_admin') {
+          navigate('/super-admin/dashboard');
+        } else {
+          navigate('/admin/dashboard');
+        }
+      } else {
+        navigate('/admin/dashboard'); // Default fallback
+      }
     } catch (error) {
       setError(error.message);
     } finally {

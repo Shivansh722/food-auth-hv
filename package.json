@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "firebase": "^10.7.1",

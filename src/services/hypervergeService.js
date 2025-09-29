@@ -31,7 +31,13 @@ class HyperVergeService {
   }
 
   // Launches the real HyperVerge workflow with diagnostics
-  async launchSDK(transactionId, callback) {
+  /**
+   * Launches the HyperVerge workflow.
+   * @param {string} transactionId
+   * @param {function} callback
+   * @param {object} [workflowInputs] - Optional workflow inputs (e.g., { bvnPhoto: ... })
+   */
+  async launchSDK(transactionId, callback, workflowInputs) {
     await this.loadSDK();
 
     if (!window.HyperKYCModule) {
@@ -39,8 +45,25 @@ class HyperVergeService {
       return;
     }
 
-    // Normalize access token: SDK expects "Bearer <token>"
-    let token = HV_CONFIG.accessToken;
+  // Normalize access token: SDK expects "Bearer <token>"
+  let token = HV_CONFIG.accessToken;
+    // Log all launch parameters and Firebase env
+    console.log('Launching HyperVerge SDK with config:', {
+      appId: HV_CONFIG.appId,
+      appKey: HV_CONFIG.appKey,
+      workflowId: HV_CONFIG.workflowId,
+      accessToken: token,
+      transactionId,
+      envFirebase: {
+        apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+        authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+        projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+        storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+        appId: process.env.REACT_APP_FIREBASE_APP_ID,
+        measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
+      }
+    });
     if (token) {
       token = token.trim();
       if (!token.toLowerCase().startsWith('bearer ')) {
@@ -115,12 +138,17 @@ class HyperVergeService {
     // Launch using the accessToken-based constructor if token is present
     try {
       if (token && window.HyperKycConfig) {
-        // Some SDK versions try to infer appId from the token; if that fails the SDK ends up
-        // requesting workflows with appId=undefined. Pass appId explicitly when available.
+        // Support passing workflowInputs (e.g., { bvnPhoto }) for workflows that require them
         let cfg;
-        if (HV_CONFIG.appId) {
+        if (HV_CONFIG.appId && workflowInputs) {
+          console.log('Passing explicit appId and workflowInputs to HyperKycConfig');
+          cfg = new window.HyperKycConfig(token, HV_CONFIG.workflowId, transactionId, HV_CONFIG.appId, workflowInputs);
+        } else if (HV_CONFIG.appId) {
           console.log('Passing explicit appId to HyperKycConfig to avoid appId=undefined in workflow fetch');
           cfg = new window.HyperKycConfig(token, HV_CONFIG.workflowId, transactionId, HV_CONFIG.appId);
+        } else if (workflowInputs) {
+          console.log('Passing workflowInputs to HyperKycConfig');
+          cfg = new window.HyperKycConfig(token, HV_CONFIG.workflowId, transactionId, workflowInputs);
         } else {
           cfg = new window.HyperKycConfig(token, HV_CONFIG.workflowId, transactionId);
         }

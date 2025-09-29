@@ -76,3 +76,4 @@ hv-credentials.json
 
 # Proxy server logs
 proxy-server.log
+.vercel
