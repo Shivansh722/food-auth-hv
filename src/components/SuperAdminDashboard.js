@@ -428,7 +428,7 @@ const SuperAdminDashboard = () => {
               style={{
                 flex: 1,
                 padding: '12px 16px',
-                background: activeTab === tab.id ? '#007bff' : 'transparent',
+                background: activeTab === tab.id ? '#1a1a1a' : 'transparent',
                 color: activeTab === tab.id ? 'white' : 'rgba(0,0,0,0.7)',
                 border: 'none',
                 borderRadius: '8px',
@@ -490,8 +490,9 @@ const SuperAdminDashboard = () => {
                       borderRadius: '4px',
                       fontSize: '12px',
                       fontWeight: '500',
-                      background: log.status === 'success' ? 'rgba(40,167,69,0.1)' : 'rgba(220,53,69,0.1)',
-                      color: log.status === 'success' ? '#28a745' : '#dc3545'
+                      background: '#f8f9fa',
+                      color: '#1a1a1a',
+                      border: '1px solid #e9ecef'
                     }}>
                       {log.status === 'success' ? 'Success' : 'Failed'}
                     </div>

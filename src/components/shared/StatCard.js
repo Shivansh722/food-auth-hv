@@ -45,7 +45,7 @@ const StatCard = ({
         left: 0,
         right: 0,
         height: '4px',
-        background: color
+        background: '#1a1a1a'
       }} />
       
       <div style={{
@@ -56,7 +56,7 @@ const StatCard = ({
       }}>
         <div style={{
           fontSize: '24px',
-          color: color,
+          color: '#1a1a1a',
           opacity: 0.8
         }}>
           {icon}

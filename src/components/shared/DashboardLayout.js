@@ -75,7 +75,7 @@ const DashboardLayout = ({
         <div style={{
           padding: '24px 20px',
           borderBottom: '1px solid rgba(0,0,0,0.08)',
-          background: 'linear-gradient(135deg, #007bff, #0056b3)'
+          background: '#1a1a1a'
         }}>
           <h2 style={{
             margin: 0,
@@ -90,7 +90,7 @@ const DashboardLayout = ({
           </h2>
           <p style={{
             margin: '4px 0 0',
-            color: 'rgba(255,255,255,0.8)',
+            color: '#6c757d',
             fontSize: '12px',
             fontWeight: '500'
           }}>
@@ -175,15 +175,27 @@ const DashboardLayout = ({
             onClick={handleLogout}
             style={{
               width: '100%',
-              padding: '8px 12px',
-              background: 'rgba(220,53,69,0.1)',
-              color: '#dc3545',
-              border: '1px solid rgba(220,53,69,0.2)',
-              borderRadius: '6px',
-              fontSize: '12px',
-              fontWeight: '500',
+              padding: '12px 16px',
+              backgroundColor: '#1a1a1a',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              fontSize: '14px',
+              fontWeight: '600',
               cursor: 'pointer',
-              transition: 'all 0.2s ease'
+              transition: 'all 0.2s ease',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.backgroundColor = '#333';
+              e.target.style.transform = 'translateY(-1px)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#1a1a1a';
+              e.target.style.transform = 'translateY(0)';
             }}
           >
             🚪 Logout

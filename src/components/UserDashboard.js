@@ -295,7 +295,6 @@ const UserDashboard = () => {
           title="Today's Meals"
           value={userStats.todayMeals || 0}
           icon="🍽️"
-          color="#007bff"
           trend={userStats.todayMeals > userStats.avgDaily ? 'up' : userStats.todayMeals < userStats.avgDaily ? 'down' : 'neutral'}
           trendValue={`vs ${userStats.avgDaily || 0} avg`}
         />
@@ -303,7 +302,6 @@ const UserDashboard = () => {
           title="This Week"
           value={userStats.weeklyMeals || 0}
           icon="📅"
-          color="#28a745"
           trend={userStats.weeklyMeals > (userStats.lastWeekMeals || 0) ? 'up' : userStats.weeklyMeals < (userStats.lastWeekMeals || 0) ? 'down' : 'neutral'}
           trendValue={`vs ${userStats.lastWeekMeals || 0} last week`}
         />
@@ -311,7 +309,6 @@ const UserDashboard = () => {
           title="Weekly Verifications"
           value={currentWeekVerifications}
           icon="✅"
-          color="#17a2b8"
           trend="neutral"
           trendValue={`${userStats.totalMeals || 0} total`}
         />
@@ -319,13 +316,11 @@ const UserDashboard = () => {
           title="Current Streak"
           value={`${userStats.currentStreak || 0} days`}
           icon="🔥"
-          color="#ffc107"
         />
         <StatCard
           title="Favorite Time"
           value={userStats.favoriteTime || '12:00'}
           icon="⏰"
-          color="#6f42c1"
         />
       </div>
 
@@ -350,7 +345,7 @@ const UserDashboard = () => {
               style={{
                 flex: 1,
                 padding: '12px 16px',
-                background: activeTab === tab.id ? '#007bff' : 'transparent',
+                background: activeTab === tab.id ? '#1a1a1a' : 'transparent',
                 color: activeTab === tab.id ? 'white' : 'rgba(0,0,0,0.7)',
                 border: 'none',
                 borderRadius: '8px',
@@ -426,7 +421,7 @@ const UserDashboard = () => {
                       width: '8px',
                       height: '8px',
                       borderRadius: '50%',
-                      background: verification.verified ? '#28a745' : '#dc3545'
+                      background: verification.verified ? '#1a1a1a' : '#6c757d'
                     }} />
                   </div>
                 ))}
@@ -479,36 +474,36 @@ const UserDashboard = () => {
           icon="✅"
         >
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-            <div style={{ textAlign: 'center', padding: '16px', background: 'rgba(23, 162, 184, 0.1)', borderRadius: '8px' }}>
-              <div style={{ fontSize: '24px', fontWeight: '600', color: '#17a2b8' }}>
+            <div style={{ textAlign: 'center', padding: '16px', background: '#f8f9fa', borderRadius: '8px' }}>
+              <div style={{ fontSize: '24px', fontWeight: '600', color: '#1a1a1a' }}>
                 {currentWeekVerifications}
               </div>
               <div style={{ fontSize: '12px', color: 'rgba(0,0,0,0.6)', marginTop: '4px' }}>
-                This Week
+                📅 This Week
               </div>
             </div>
-            <div style={{ textAlign: 'center', padding: '16px', background: 'rgba(40, 167, 69, 0.1)', borderRadius: '8px' }}>
-              <div style={{ fontSize: '24px', fontWeight: '600', color: '#28a745' }}>
+            <div style={{ textAlign: 'center', padding: '16px', background: '#f8f9fa', borderRadius: '8px' }}>
+              <div style={{ fontSize: '24px', fontWeight: '600', color: '#1a1a1a' }}>
                 {mealDistribution.find(m => m.name === 'Breakfast')?.value || 0}
               </div>
               <div style={{ fontSize: '12px', color: 'rgba(0,0,0,0.6)', marginTop: '4px' }}>
-                Breakfast
+                🌅 Breakfast
               </div>
             </div>
-            <div style={{ textAlign: 'center', padding: '16px', background: 'rgba(255, 193, 7, 0.1)', borderRadius: '8px' }}>
-              <div style={{ fontSize: '24px', fontWeight: '600', color: '#ffc107' }}>
+            <div style={{ textAlign: 'center', padding: '16px', background: '#f8f9fa', borderRadius: '8px' }}>
+              <div style={{ fontSize: '24px', fontWeight: '600', color: '#1a1a1a' }}>
                 {mealDistribution.find(m => m.name === 'Lunch')?.value || 0}
               </div>
               <div style={{ fontSize: '12px', color: 'rgba(0,0,0,0.6)', marginTop: '4px' }}>
-                Lunch
+                🌞 Lunch
               </div>
             </div>
-            <div style={{ textAlign: 'center', padding: '16px', background: 'rgba(111, 66, 193, 0.1)', borderRadius: '8px' }}>
-              <div style={{ fontSize: '24px', fontWeight: '600', color: '#6f42c1' }}>
+            <div style={{ textAlign: 'center', padding: '16px', background: '#f8f9fa', borderRadius: '8px' }}>
+              <div style={{ fontSize: '24px', fontWeight: '600', color: '#1a1a1a' }}>
                 {mealDistribution.find(m => m.name === 'Dinner')?.value || 0}
               </div>
               <div style={{ fontSize: '12px', color: 'rgba(0,0,0,0.6)', marginTop: '4px' }}>
-                Dinner
+                🌙 Dinner
               </div>
             </div>
           </div>
@@ -553,7 +548,7 @@ const UserDashboard = () => {
                     </td>
                     <td style={{ padding: '12px' }}>
                       <span style={{
-                        color: verification.verified ? '#28a745' : '#dc3545',
+                        color: verification.verified ? '#1a1a1a' : '#6c757d',
                         fontWeight: '500'
                       }}>
                         {verification.verified ? '✅ Verified' : '❌ Pending'}

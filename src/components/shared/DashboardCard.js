@@ -27,7 +27,7 @@ const DashboardCard = ({
           left: 0,
           right: 0,
           height: '3px',
-          background: 'linear-gradient(90deg, #007bff, #28a745, #007bff)',
+          background: '#1a1a1a',
           backgroundSize: '200% 100%',
           animation: 'loading 2s infinite'
         }} />
@@ -35,40 +35,22 @@ const DashboardCard = ({
       
       {(title || icon || action) && (
         <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '20px',
-          paddingBottom: '16px',
-          borderBottom: '1px solid rgba(0,0,0,0.08)'
+          padding: '16px 20px',
+          borderBottom: '1px solid rgba(0,0,0,0.08)',
+          background: headerColor || '#1a1a1a'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {icon && (
-              <div style={{
-                fontSize: '24px',
-                color: headerColor,
-                display: 'flex',
-                alignItems: 'center'
-              }}>
-                {icon}
-              </div>
-            )}
-            {title && (
-              <h3 style={{
-                margin: 0,
-                color: headerColor,
-                fontSize: '1.25rem',
-                fontWeight: '600'
-              }}>
-                {title}
-              </h3>
-            )}
-          </div>
-          {action && (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              {action}
-            </div>
-          )}
+          <h3 style={{
+            margin: 0,
+            color: 'white',
+            fontSize: '1.1rem',
+            fontWeight: '600',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            {icon && <span>{icon}</span>}
+            {title}
+          </h3>
         </div>
       )}
       

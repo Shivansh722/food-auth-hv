@@ -36,8 +36,8 @@ export const RushTimeChart = ({ data, height = 300 }) => (
     <AreaChart data={data}>
       <defs>
         <linearGradient id="rushGradient" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="5%" stopColor="#007bff" stopOpacity={0.3}/>
-          <stop offset="95%" stopColor="#007bff" stopOpacity={0.05}/>
+          <stop offset="5%" stopColor="#1a1a1a" stopOpacity={0.3}/>
+          <stop offset="95%" stopColor="#1a1a1a" stopOpacity={0.05}/>
         </linearGradient>
       </defs>
       <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
@@ -54,7 +54,7 @@ export const RushTimeChart = ({ data, height = 300 }) => (
       <Area 
         type="monotone" 
         dataKey="count" 
-        stroke="#007bff" 
+        stroke="#1a1a1a" 
         strokeWidth={2}
         fill="url(#rushGradient)" 
       />
@@ -64,7 +64,7 @@ export const RushTimeChart = ({ data, height = 300 }) => (
 
 // Meal Distribution Chart
 export const MealDistributionChart = ({ data, height = 300 }) => {
-  const COLORS = ['#007bff', '#28a745', '#ffc107', '#dc3545'];
+  const COLORS = ['#1a1a1a', '#333', '#6c757d', '#adb5bd'];
   
   return (
     <ResponsiveContainer width="100%" height={height}>
@@ -106,10 +106,10 @@ export const WeeklyTrendChart = ({ data, height = 300 }) => (
       <Line 
         type="monotone" 
         dataKey="meals" 
-        stroke="#007bff" 
+        stroke="#1a1a1a" 
         strokeWidth={3}
-        dot={{ fill: '#007bff', strokeWidth: 2, r: 4 }}
-        activeDot={{ r: 6, stroke: '#007bff', strokeWidth: 2 }}
+        dot={{ fill: '#1a1a1a', strokeWidth: 2, r: 4 }}
+        activeDot={{ r: 6, stroke: '#1a1a1a', strokeWidth: 2 }}
       />
     </LineChart>
   </ResponsiveContainer>
@@ -132,13 +132,13 @@ export const UsageComparisonChart = ({ data, height = 300 }) => (
       <Tooltip content={<CustomTooltip />} />
       <Bar 
         dataKey="current" 
-        fill="#007bff" 
+        fill="#1a1a1a" 
         radius={[4, 4, 0, 0]}
         name="This Period"
       />
       <Bar 
         dataKey="previous" 
-        fill="rgba(0,123,255,0.3)" 
+        fill="#6c757d" 
         radius={[4, 4, 0, 0]}
         name="Previous Period"
       />
@@ -147,7 +147,7 @@ export const UsageComparisonChart = ({ data, height = 300 }) => (
 );
 
 // Simple Bar Chart
-export const SimpleBarChart = ({ data, dataKey, height = 200, color = "#007bff" }) => (
+export const SimpleBarChart = ({ data, dataKey, height = 200, color = "#1a1a1a" }) => (
   <ResponsiveContainer width="100%" height={height}>
     <BarChart data={data}>
       <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />

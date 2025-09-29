@@ -239,7 +239,6 @@ const RegularAdminDashboard = () => {
           title="Active Users"
           value={stats.activeUsersToday || 0}
           icon="👥"
-          color="#007bff"
           trend={stats.activeUsersToday > stats.activeUsersWeek / 7 ? 'up' : 'down'}
           trendValue={`${stats.activeUsersWeek || 0} this week`}
         />
@@ -247,7 +246,6 @@ const RegularAdminDashboard = () => {
           title="Today's Meals"
           value={stats.todayMeals || 0}
           icon="🍽️"
-          color="#28a745"
           trend={stats.weekGrowth > 0 ? 'up' : stats.weekGrowth < 0 ? 'down' : 'neutral'}
           trendValue={`${stats.weekGrowth}% vs last week`}
         />
@@ -255,7 +253,6 @@ const RegularAdminDashboard = () => {
           title="Success Rate"
           value={`${stats.successRate || 0}%`}
           icon="✅"
-          color="#20c997"
           trend={stats.successRate > 95 ? 'up' : 'down'}
           trendValue="System reliability"
         />
@@ -263,7 +260,6 @@ const RegularAdminDashboard = () => {
           title="Peak Hour"
           value={stats.peakHour || '12:00'}
           icon="⏰"
-          color="#ffc107"
           subtitle="Busiest time today"
         />
       </div>
@@ -282,10 +278,8 @@ const RegularAdminDashboard = () => {
                   style={{
                     padding: '12px 16px',
                     borderRadius: '8px',
-                    background: alert.type === 'error' ? 'rgba(220,53,69,0.1)' : 
-                               alert.type === 'warning' ? 'rgba(255,193,7,0.1)' : 'rgba(23,162,184,0.1)',
-                    border: `1px solid ${alert.type === 'error' ? '#dc3545' : 
-                                        alert.type === 'warning' ? '#ffc107' : '#17a2b8'}`,
+                    background: '#f8f9fa',
+                    border: '1px solid #e9ecef',
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center'
@@ -293,7 +287,7 @@ const RegularAdminDashboard = () => {
                 >
                   <div>
                     <div style={{ fontWeight: '600', fontSize: '14px', marginBottom: '4px' }}>
-                      {alert.title}
+                      {alert.type === 'error' ? '❌ ' : alert.type === 'warning' ? '⚠️ ' : 'ℹ️ '}{alert.title}
                     </div>
                     <div style={{ fontSize: '13px', color: 'rgba(0,0,0,0.7)' }}>
                       {alert.message}
@@ -340,7 +334,7 @@ const RegularAdminDashboard = () => {
               style={{
                 flex: 1,
                 padding: '12px 16px',
-                background: activeTab === tab.id ? '#007bff' : 'transparent',
+                background: activeTab === tab.id ? '#1a1a1a' : 'transparent',
                 color: activeTab === tab.id ? 'white' : 'rgba(0,0,0,0.7)',
                 border: 'none',
                 borderRadius: '8px',
@@ -402,10 +396,11 @@ const RegularAdminDashboard = () => {
                       borderRadius: '4px',
                       fontSize: '12px',
                       fontWeight: '500',
-                      background: log.status === 'success' ? 'rgba(40,167,69,0.1)' : 'rgba(220,53,69,0.1)',
-                      color: log.status === 'success' ? '#28a745' : '#dc3545'
+                      background: '#f8f9fa',
+                      color: '#1a1a1a',
+                      border: '1px solid #e9ecef'
                     }}>
-                      {log.status === 'success' ? 'Success' : 'Failed'}
+                      {log.status === 'success' ? '✅ Success' : '❌ Failed'}
                     </div>
                   </div>
                 ))}
@@ -554,7 +549,7 @@ const RegularAdminDashboard = () => {
                   <div style={{
                     width: `${stats.successRate}%`,
                     height: '100%',
-                    background: 'linear-gradient(90deg, #28a745, #20c997)',
+                    background: '#1a1a1a',
                     transition: 'width 0.3s ease'
                   }} />
                 </div>
@@ -577,7 +572,7 @@ const RegularAdminDashboard = () => {
                   <div style={{
                     width: `${(stats.activeUsersWeek / stats.totalUsers) * 100 || 0}%`,
                     height: '100%',
-                    background: 'linear-gradient(90deg, #007bff, #6610f2)',
+                    background: '#6c757d',
                     transition: 'width 0.3s ease'
                   }} />
                 </div>
